@@ -51,8 +51,9 @@ def feature_normalize(X):
 def feature_scaling(X):
     """ linear regression with feature scaling, will use mean, std in test data.
 
-    Feature scaling in gradient descent will train different parameters,
+    * Feature scaling in gradient descent will train different parameters,
     compare to normal equation with no feature scaling.
+    * If we have more than one feature, we need feature scaling.
     """
     X_mean = mean(X, axis=0)
     X_std = std(X, axis=0)
