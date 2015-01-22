@@ -39,7 +39,7 @@ def normal_equation(X, Y):
 
 
 def feature_normalize(X):
-    """ use var replace std also works
+    """ `var` replace `std` also works
     """
     X_mean = mean(X, axis=0)
     X_std = std(X, axis=0)
@@ -49,6 +49,11 @@ def feature_normalize(X):
     return X_regular, X_mean, X_std
 
 def feature_scaling(X):
+    """ linear regression with feature scaling, will use mean, std in test data.
+
+    Feature scaling in gradient descent will train different parameters,
+    compare to normal equation with no feature scaling.
+    """
     X_mean = mean(X, axis=0)
     X_std = std(X, axis=0)
     X_std[0, 0] = 1
@@ -149,7 +154,7 @@ if __name__ == '__main__':
     theta = zeros((shape(data_norm)[1], 1))
     alpha = 0.01
     iterations = 1000
-    theta, cost_history = batch_gradient_descent(data, label, theta, alpha, iterations)
+    theta, cost_history = batch_gradient_descent(data_norm, label, theta, alpha, iterations)
 
     if 0: tune_learning_rate(cost_history)
 
