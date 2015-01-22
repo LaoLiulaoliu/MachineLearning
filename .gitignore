@@ -1,0 +1,6 @@
+# Desktop Services Store is a hidden file with a proprietary format created by OS X to store custom attributes of a folder such as the position of icons or the choice of a background image.
+.DS_Store
+
+# Executables
+*.out
+*.pyc
