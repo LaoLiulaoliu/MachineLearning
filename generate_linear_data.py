@@ -32,7 +32,7 @@ def plot():
     ax = fig.add_subplot(2, 2, 1)
     ax.hist(lin_x, histtype='bar')
 
-    # 误差的分布
+    # 误差的分布, 因为是公式制造的误差，所以不是系统误差，不满足高斯分布
     ax = fig.add_subplot(2, 2, 2)
     ax.plot(lin_x, 0.4*cos(10*lin_x)+0.6*random.normal(0,1))
 
