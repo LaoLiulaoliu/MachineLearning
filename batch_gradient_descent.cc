@@ -57,6 +57,7 @@ int main(void)
 {
     Model a;
     a.read_data();
+    a.print_data();
     return 0;
 }
 
