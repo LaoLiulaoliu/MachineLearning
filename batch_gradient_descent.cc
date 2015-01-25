@@ -55,9 +55,9 @@ int train_gradient_descent()
 
 int main(void)
 {
-    Model a;
+    Model<float> a;
     a.read_data();
-    a.print_data();
+    a.print_Y();
     return 0;
 }
 
