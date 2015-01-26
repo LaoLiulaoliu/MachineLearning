@@ -1,23 +1,27 @@
-#include <iostream>
+#include "matrix.h"
+
 #include <fstream>
-#include <vector>
 
-#include "EMatrix.h"
-
-using namespace ematrix;
-using namespace std;
+using namespace matrix;
 
 template <class T>
 class Model
 {
 public:
+    Model();
+    virtual ~Model();
+
     int read_data();
     int print_X();
     int print_Y();
 
+
 private:
+
     vector< vector<T> > X2d;
-    vector<T> Y2d;
+    vector< vector<T> > Y2d;
+    Matrix< T,1,1 > X;
+    Matrix< T,1,1 > Y;
 };
 
 
@@ -31,7 +35,8 @@ int Model<T>::read_data()
         vec_x[0] = x1;
         vec_x[1] = x2;
         X2d.push_back(vec_x);
-        Y2d.push_back(y);
+        vector<T> vec_y(1);
+        Y2d.push_back(vec_y);
     }
 
     return 0;
@@ -53,16 +58,12 @@ int Model<T>::print_X()
 template <class T>
 int Model<T>::print_Y()
 {
-    size_t j = Y2d.size();
-    for (j = 0; j < Y2d.size(); ++j) {
-        cout << Y2d[j] << endl;
+    for (size_t i = 0; i < Y2d.size(); ++i) {
+        for (size_t j = 0; j < Y2d[i].size(); ++j) {
+            cout << Y2d[i][j] << " ";
+        }
+        cout << endl;
     }
     return 0;
-}
-
-template <class T>
-int Model<T> operator * (const Model<T>& R)
-{
-
 }
 
