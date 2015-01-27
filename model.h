@@ -4,7 +4,7 @@
 
 using namespace matrix;
 
-template <class T>
+template < class T >
 class Model
 {
 public:

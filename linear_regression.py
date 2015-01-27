@@ -75,8 +75,10 @@ def plot_cost_function(X, Y):
     """ This picture shows that we cat get global minimum of J(θ)
         by partial derivative J(θ) on θ
     """
-    theta0_vals = linspace(-100, 100, 100)
-    theta1_vals = linspace(-100, 100, 100)
+    upper_bound = 2* X.max()
+    lower_bound = 2* X.min()
+    theta0_vals = linspace(lower_bound, upper_bound, 100)
+    theta1_vals = linspace(lower_bound, upper_bound, 100)
     len_0, len_1 = len(theta0_vals), len(theta1_vals)
     J_vals = zeros((len_0, len_1))
 
@@ -89,14 +91,15 @@ def plot_cost_function(X, Y):
     fig.suptitle("cost function J change on theta")
     ax = fig.add_subplot(111, projection='3d')
     theta0_vals, theta1_vals = meshgrid(theta0_vals, theta1_vals)
-    ax.plot_surface(theta0_vals, theta1_vals, J_vals)
+    surf = ax.plot_surface( theta0_vals, theta1_vals, J_vals,
+                            rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False )
     ax.set_xlabel('theta0')
     ax.set_ylabel('theta1')
     ax.set_zlabel('cost value')
     plt.show()
 
 
-def batch_gradient_descent(X, Y, theta, alpha, iters):
+def batch_gradient_descent(X, Y, theta, alpha=0.01, iters=1000):
     """ gradient descent to get local minimum of cost function
 
     :param theta: theta is an array
@@ -133,30 +136,37 @@ def plot_result(X, Y, theta):
     ax.scatter(a, b, c, c='r', marker='o')
 
     p, q = meshgrid(a, b)
-    surf = ax.plot_surface( p, q, (X * theta).getA(),
-                            rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False )
+    surf = ax.plot_surface( p, q, (X * theta).getA() )
     ax.set_xlabel('X1 label')
     ax.set_ylabel('X2 label')
     ax.set_zlabel('Y label')
 
-    ax.set_zlim(-500, 500)
-    fig.colorbar(surf, shrink=0.5, aspect=10)
-
     plt.show()
 
-if __name__ == '__main__':
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Use to draw")
+    parser.add_argument('--cost', '-c', help="plot cost function", action="store_true")
+    parser.add_argument('--normal', '-n', help="calculate normal equation", action="store_true")
+    parser.add_argument('--learn', '-l', help="plot one learning rate's convergence")
+    option = parser.parse_args()
+
     data, label = load_data()
-    theta_n = normal_equation(data, label)
-    print('normal equation solve theta: {}\n'.format(theta_n))
-
     data_norm, data_mean, data_std = feature_scaling(data)
-    if None: plot_cost_function(data_norm, label)
-
     theta = zeros((shape(data_norm)[1], 1))
-    alpha = 0.01
-    iterations = 1000
-    theta, cost_history = batch_gradient_descent(data_norm, label, theta, alpha, iterations)
 
-    if 0: tune_learning_rate(cost_history)
+    print(option.cost, option.normal, option.learn)
+    if option.cost:
+        plot_cost_function(data, label)
+    if option.normal:
+        theta_n = normal_equation(data, label)
+        print('normal equation solve theta: {}\n'.format(theta_n))
+    if option.learn:
+        theta, cost_history = batch_gradient_descent(data_norm, label, theta)
+        tune_learning_rate(cost_history)
+        plot_result(data, label, theta)
 
-    if 0: plot_result(data, label, theta)
+
+if __name__ == '__main__':
+    main()
+
