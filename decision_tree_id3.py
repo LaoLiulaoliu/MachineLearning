@@ -9,13 +9,15 @@ from collections import Counter
 import numpy as np
 
 def source_entropy(Y):
+    """ The result of entropy is [0, ∞)
+    """
     m, _ = np.shape(Y)
-    labels = Y.T.A[0]
+    labels = Y.flatten().A[0]
 
     entropy = 0
     frequency = Counter()
-    for value in set(labels):
-        frequency[value] = np.sum(labels == value) / m
+    for value in labels:
+        frequency[value] += 1
 
     for value, freq in frequency.iteritems():
         entropy -= freq * np.log2(freq)
