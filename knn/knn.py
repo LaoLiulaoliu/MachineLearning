@@ -5,11 +5,17 @@
 # knn need to normalize the data, or else the feature data
 # with large scale will dominate the distance calculation,
 # then we only train this large scale feature.
+#
+# We can tuning the k, let classifier more accuracy.
 
 from __future__ import print_function
 from __future__ import division
 from collections import Counter
-from toolkit import normalizing
+
+import os, sys
+parent_dir = os.path.abspath(os.path.dirname(__file__) + '..')
+sys.path.append(parent_dir)
+import toolkit
 
 # It is a good idea not load such large library at once
 import numpy as np
@@ -34,7 +40,7 @@ def process_data(fname='datingTestSet.txt'):
         setattr(process_data, '_loaded', ())
 
         X, Y = load_data(fname, sep='\t')
-        x_normalized, x_min, x_range = normalizing(X)
+        x_normalized, x_min, x_range = toolkit.normalizing(X)
         process_data._loaded = (x_normalized, x_min, x_range, Y)
 
     return process_data._loaded
@@ -64,6 +70,8 @@ def knn_classifier(one_data, x_normalized=None, x_min=None, x_range=None, Y=None
 
 
 class test(object):
+    """ the ratio can be tuned
+    """
     def __init__(self, fname='datingTestSet.txt', sep='\t'):
         self.X, self.Y = load_data(fname=fname, sep=sep)
 
@@ -77,7 +85,7 @@ class test(object):
 
         sample_indices = np.arange(m)
         np.random.shuffle(sample_indices)
-        x_normalized, x_min, x_range = normalizing(self.X[sample_indices[test_m:],])
+        x_normalized, x_min, x_range = toolkit.normalizing(self.X[sample_indices[test_m:],])
 
         error, counter = 0, 0
         for i in sample_indices[:test_m]:
