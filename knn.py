@@ -21,25 +21,25 @@ def load_data(fname, label=True, sep=None):
         for line in fd:
             data = line.strip().split(sep)
             if label:
-                data_mat.append(data[:-1])
-                label_mat.append(data[-1])
+                data_mat.append( [float(i) for i in data[:-1]] )
+                label_mat.append( float(data[-1]) )
             else:
-                data_mat.append(data)
+                data_mat.append( [float(i) for i in data] )
     return np.mat(data_mat), np.mat(label_mat).T
 
-def process_data():
+def process_data(fname='datingTestSet.txt'):
     """
     """
     if not hasattr(process_data, '_loaded'):
-        setattr(proess_data, '_loaded', ())
+        setattr(process_data, '_loaded', ())
 
-        X, Y = load_data(sep='\t')
+        X, Y = load_data(fname, sep='\t')
         x_normalized, x_min, x_range = normalizing(X)
         process_data._loaded = (x_normalized, x_min, x_range, Y)
 
     return process_data._loaded
 
-def knn_classifier(one_data, k=5):
+def knn_classifier(one_data, x_normalized=None, x_min=None, x_range=None, Y=None, k=5):
     """ Euclidean distance of all features
 
     Every classification will calculate the distance will every data sample,
@@ -48,7 +48,9 @@ def knn_classifier(one_data, k=5):
     :param one_data: type 1 x n matrix, data need to be classified
     :param k: type int, usually k is not greater than 20
     """
-    x_normalized, x_min, x_range, Y = process_data()
+    if x_normalized is None and Y is None:
+        x_normalized, x_min, x_range, Y = process_data()
+
     one_normalized = (one_data - x_min) / x_range
     distances = np.sqrt( np.power((x_normalized - one_normalized), 2).sum(axis=1) )
 
@@ -60,17 +62,31 @@ def knn_classifier(one_data, k=5):
         class_counter[ Y[distance_sort_indices[i]][0, 0] ] += 1
     return class_counter.most_common(1)[0][0]
 
-def cross_validation(ratio=0.1):
-    """ Usually use 10% random data as test data
 
-    :param ratio: percentage of test data
-    """
-    x_normalized, x_min, x_range, Y = process_data()
-    m, n = np.shape(x_normalized)
-    test_data_num = int(m * ratio)
-    sample_indices = range(m)
-    sample_indices = np.random.shuffle(sample_indices)
+class test(object):
+    def __init__(self, fname='datingTestSet.txt', sep='\t'):
+        self.X, self.Y = load_data(fname=fname, sep=sep)
 
-    for i in sample_indices[:test_data_num]:
-        knn_classifier(x_normalized[i], 3)
+    def cross_validation(self, ratio=0.1):
+        """ Usually use 10% random data as test data
 
+        :param ratio: percentage of test data
+        """
+        m, n = np.shape(self.X)
+        test_m = int(m * ratio)
+
+        sample_indices = np.arange(m)
+        np.random.shuffle(sample_indices)
+        x_normalized, x_min, x_range = normalizing(self.X[sample_indices[test_m:],])
+
+        error, counter = 0, 0
+        for i in sample_indices[:test_m]:
+            y = knn_classifier(self.X[i], x_normalized, x_min, x_range, self.Y[sample_indices[test_m:],])
+            if self.Y[i][0, 0] != y:
+                error += 1
+            counter += 1
+        print('error rate is: {}'.format(error / counter))
+
+if __name__ == '__main__':
+    test().cross_validation()
+    print( knn_classifier(np.mat([70843, 7.436056, 1.479856])) )
