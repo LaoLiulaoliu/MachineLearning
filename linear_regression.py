@@ -46,7 +46,7 @@ def feature_normalize(X):
     X_std[0, 0] = 1
     X_normalize = (X - X_mean) / X_std
     X_normalize[:, 0] = 1.0
-    return X_regular, X_mean, X_std
+    return X_normalize, X_mean, X_std
 
 def feature_scaling(X):
     """ linear regression with feature scaling, will use mean, std in test data.
