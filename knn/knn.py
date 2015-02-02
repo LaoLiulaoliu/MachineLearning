@@ -28,7 +28,7 @@ def load_data(fname, label=True, sep=None):
             data = line.strip().split(sep)
             if label:
                 data_mat.append( [float(i) for i in data[:-1]] )
-                label_mat.append( float(data[-1]) )
+                label_mat.append(data[-1])
             else:
                 data_mat.append( [float(i) for i in data] )
     return np.mat(data_mat), np.mat(label_mat).T
