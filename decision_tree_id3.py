@@ -15,11 +15,14 @@ def source_entropy(Y):
     labels = Y.flatten().A[0]
 
     entropy = 0
-    frequency = Counter()
+    counter = Counter()
     for value in labels:
-        frequency[value] += 1
+        counter[value] += 1
 
-    for value, freq in frequency.iteritems():
-        entropy -= freq * np.log2(freq)
+    for value, count in counter.iteritems():
+        frequency = count / m
+        entropy -= frequency * np.log2(frequency)
 
     return entropy
+
+
