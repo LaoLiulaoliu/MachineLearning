@@ -21,25 +21,13 @@ import toolkit
 import numpy as np
 
 
-def load_data(fname, label=True, sep=None):
-    data_mat, label_mat = [], []
-    with open(fname) as fd:
-        for line in fd:
-            data = line.strip().split(sep)
-            if label:
-                data_mat.append( [float(i) for i in data[:-1]] )
-                label_mat.append(data[-1])
-            else:
-                data_mat.append( [float(i) for i in data] )
-    return np.mat(data_mat), np.mat(label_mat).T
-
-def process_data(fname='datingTestSet.txt'):
+def process_data(fname='dating.data'):
     """
     """
     if not hasattr(process_data, '_loaded'):
         setattr(process_data, '_loaded', ())
 
-        X, Y = load_data(fname, sep='\t')
+        X, Y = toolkit.load_data(fname, sep='\t')
         x_normalized, x_min, x_range = toolkit.normalizing(X)
         process_data._loaded = (x_normalized, x_min, x_range, Y)
 
@@ -72,8 +60,8 @@ def knn_classifier(one_data, x_normalized=None, x_min=None, x_range=None, Y=None
 class test(object):
     """ the ratio can be tuned
     """
-    def __init__(self, fname='datingTestSet.txt', sep='\t'):
-        self.X, self.Y = load_data(fname=fname, sep=sep)
+    def __init__(self, fname='dating.data', sep='\t'):
+        self.X, self.Y = toolkit.load_data(fname=fname, sep=sep)
 
     def cross_validation(self, ratio=0.1):
         """ Usually use 10% random data as test data

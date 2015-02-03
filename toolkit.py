@@ -24,3 +24,18 @@ def normalizing(X):
 
 def euclidean_distance(A, B):
     return np.sqrt( np.power(A - B, 2).sum(axis=1) )
+
+
+def load_data(fname, label=True, sep=None):
+    data_mat, label_mat = [], []
+    with open(fname) as fd:
+        for line in fd:
+            if '?' in line: continue
+            data = line.strip().split(sep)
+            if label:
+                data_mat.append( [float(i) for i in data[:-1]] )
+                label_mat.append(data[-1])
+            else:
+                data_mat.append( map(float, data) )
+    return np.mat(data_mat), np.mat(label_mat).T
+
