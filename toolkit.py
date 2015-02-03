@@ -21,3 +21,6 @@ def normalizing(X):
 
     x_normalized = (X - x_min) / x_range
     return x_normalized, x_min, x_range
+
+def euclidean_distance(A, B):
+    return np.sqrt( np.power(A - B, 2).sum(axis=1) )

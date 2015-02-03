@@ -58,7 +58,7 @@ def knn_classifier(one_data, x_normalized=None, x_min=None, x_range=None, Y=None
         x_normalized, x_min, x_range, Y = process_data()
 
     one_normalized = (one_data - x_min) / x_range
-    distances = np.sqrt( np.power((x_normalized - one_normalized), 2).sum(axis=1) )
+    distances = toolkit.euclidean_distance(x_normalized, one_normalized)
 
     distances = distances.T.A[0]
     distance_sort_indices = np.argsort(distances)
