@@ -40,13 +40,12 @@ def choose_best_feature(data):
 
     for i in range(n-1):
         counter = Counter()
-        for value in data[:, i]
-            counter[value] += 1
+        for value in data[:, i]: counter[value] += 1
 
-            (data[:, i] == val)
-
-
-        entropy = data[:, i]
+        entropy = 0
+        for val, times in counter.iteritems():
+            branch_entropy = source_entropy( data[ (data[:, i].T.A[0] == val), -1 ] )
+            entropy += times / n * branch_entropy
 
         if entropy < mini_entropy:
             mini_entropy = entropy
