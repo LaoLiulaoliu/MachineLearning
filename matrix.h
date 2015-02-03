@@ -14,9 +14,11 @@ template < class T, size_t row, size_t col >
 class Matrix
 {
 public:
-    Matrix();
-    virtual ~Matrix();
+//    Matrix();
+//    virtual ~Matrix();
 
+    Matrix() {}
+    virtual ~Matrix() {}
     Matrix (T first, ...)
     :iRows(row), iCols(col) {}
 

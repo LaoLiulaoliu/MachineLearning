@@ -8,9 +8,11 @@ template < class T >
 class Model
 {
 public:
-    Model();
-    virtual ~Model();
+//    Model();
+//    virtual ~Model();
 
+    Model() {}
+    virtual ~Model() {}
     int read_data();
     int print_X();
     int print_Y();
@@ -35,7 +37,9 @@ int Model<T>::read_data()
         vec_x[0] = x1;
         vec_x[1] = x2;
         X2d.push_back(vec_x);
-        vector<T> vec_y(1);
+
+        vector<T> vec_y;
+        vec_y.push_back(y);
         Y2d.push_back(vec_y);
     }
 
