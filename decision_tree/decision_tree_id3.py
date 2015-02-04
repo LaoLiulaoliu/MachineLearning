@@ -8,6 +8,9 @@ from __future__ import division
 from collections import Counter
 import numpy as np
 
+import os, sys
+parent_dir = os.path.abspath(os.path.dirname(__file__) + '..')
+sys.path.append(parent_dir)
 import toolkit
 
 def source_entropy(Y):
@@ -80,7 +83,7 @@ def make_tree(data, labels):
 if __name__ == '__main__':
 
     # 16 samples have missing feature values, denoted by "?"
-    data, _ = toolkit.load_data('breast-cancer-wisconsin.data', label=False, sep=',')
+    data, _ = toolkit.load_data('../breast-cancer-wisconsin.data', label=False, sep=',')
     labels = np.array(['Sample code number', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell Shape', 'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei', 'Bland Chromatin', 'Normal Nucleoli', 'Mitoses', 'Class'])
     r = make_tree(data[:, 1:], labels[1:])
     print(r)
