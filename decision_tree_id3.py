@@ -40,7 +40,7 @@ def choose_best_feature(data):
 
     for i in range(n-1):
         counter = Counter()
-        for value in data[:, i]: counter[value] += 1
+        for value in data[:, i]: counter[value[0, 0]] += 1
 
         entropy = 0
         for val, times in counter.iteritems():
@@ -54,7 +54,26 @@ def choose_best_feature(data):
 
 
 def make_tree(data, labels):
-    choose_best_feature(data)
+    """ If the tree only have one class, this branch over.
+        If the tree only have class column, this branch over.
+    """
+    _, n = np.shape(data)
+    if len( set(data[:, -1].T.A[0]) ) == 1:
+        return data[0, -1]
+    if n == 1:
+        counter = Counter()
+        for value in data.T.A[0]: counter[value] += 1
+        return counter.most_common(1)[0][0]
+
+    best_feature = choose_best_feature(data)
+    tree = { labels[best_feature]: {} }
+
+    for value in set(data[:, best_feature].T.A[0]):
+        lines = range(best_feature) + range(best_feature+1, n)
+        tree[labels[best_feature]][value] = \
+            make_tree(data[ data[:, best_feature].T.A[0] == value ][:, lines],
+                      labels[lines])
+    return tree
 
 
 
@@ -62,7 +81,10 @@ if __name__ == '__main__':
 
     # 16 samples have missing feature values, denoted by "?"
     data, _ = toolkit.load_data('breast-cancer-wisconsin.data', label=False, sep=',')
-    labels = ['Sample code number', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell Shape', 'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei', 'Bland Chromatin', 'Normal Nucleoli', 'Mitoses', 'Class']
+    labels = np.array(['Sample code number', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell Shape', 'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei', 'Bland Chromatin', 'Normal Nucleoli', 'Mitoses', 'Class'])
+    r = make_tree(data[:, 1:], labels[1:])
+    print(r)
 
-    make_tree(data[:, 1:], labels[1:])
+    r = make_tree(np.mat([[1, 1, 'yes'], [1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']]), np.array(['no surfacing','flippers', 'Class']))
+    print(r)
 
