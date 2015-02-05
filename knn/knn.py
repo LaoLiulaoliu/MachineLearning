@@ -57,7 +57,7 @@ def knn_classifier(one_data, x_normalized=None, x_min=None, x_range=None, Y=None
     return class_counter.most_common(1)[0][0]
 
 
-class test(object):
+class Test(object):
     """ the ratio can be tuned
     """
     def __init__(self, fname='dating.data', sep='\t'):
@@ -84,5 +84,5 @@ class test(object):
         print('error rate is: {}'.format(error / counter))
 
 if __name__ == '__main__':
-    test().cross_validation()
+    Test().cross_validation()
     print( knn_classifier(np.mat([70843, 7.436056, 1.479856])) )
