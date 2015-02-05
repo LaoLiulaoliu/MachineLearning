@@ -38,6 +38,7 @@ public:
 
 
 private:
+    DISALLOW_COPY_AND_ASSIGN(Model);
 
     vector< vector<T> > X2d;
     vector< vector<T> > Y2d;

@@ -26,6 +26,10 @@
 #include <iostream>
 #include <vector>
 
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+    TypeName(const TypeName&);             \
+    void operator=(const TypeName&)
+
 using namespace std;
 
 namespace matrix {
@@ -98,6 +102,8 @@ public:
     }
 
 private:
+    DISALLOW_COPY_AND_ASSIGN(Matrix);
+
     vector< vector<T> > Data;
     size_t iRows;
     size_t iCols;
