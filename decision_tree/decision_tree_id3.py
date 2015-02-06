@@ -21,8 +21,7 @@ def source_entropy(Y):
 
     entropy = 0
     counter = Counter()
-    for value in labels:
-        counter[value] += 1
+    for value in labels: counter[value] += 1
 
     for value, count in counter.iteritems():
         frequency = count / m
@@ -47,7 +46,7 @@ def choose_best_feature(data):
 
         entropy = 0
         for val, times in counter.iteritems():
-            branch_entropy = source_entropy( data[ (data[:, i].T.A[0] == val), -1 ] )
+            branch_entropy = source_entropy( data[ (data[:, i].flatten().A[0] == val), -1 ] )
             entropy += times / n * branch_entropy
 
         if entropy < mini_entropy:
@@ -61,24 +60,33 @@ def make_tree(data, labels):
         If the tree only have class column, this branch over.
     """
     _, n = np.shape(data)
-    if len( set(data[:, -1].T.A[0]) ) == 1:
+    if len( set(data[:, -1].flatten().A[0]) ) == 1:
         return data[0, -1]
     if n == 1:
         counter = Counter()
-        for value in data.T.A[0]: counter[value] += 1
+        for value in data.flatten().A[0]: counter[value] += 1
         return counter.most_common(1)[0][0]
 
     best_feature = choose_best_feature(data)
     tree = { labels[best_feature]: {} }
 
-    for value in set(data[:, best_feature].T.A[0]):
+    for value in set(data[:, best_feature].flatten().A[0]):
         lines = range(best_feature) + range(best_feature+1, n)
         tree[labels[best_feature]][value] = \
-            make_tree(data[ data[:, best_feature].T.A[0] == value ][:, lines],
+            make_tree(data[ data[:, best_feature].flatten().A[0] == value ][:, lines],
                       labels[lines])
     return tree
 
 
+def dump_tree(trees):
+    import cPickle
+    with open('trees.txt', 'w') as fd:
+        cPickle.dump(trees, fd)
+
+def load_tree():
+    import cPickle
+    with open('trees.txt') as fd:
+        return cPickle.load(fd)
 
 if __name__ == '__main__':
 
