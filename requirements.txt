@@ -1,0 +1,10 @@
+ipython
+numpy
+scipy
+pandas
+matplotlib
+scikit-learn
+pyzmq
+pytz
+Jinja2
+tornado
