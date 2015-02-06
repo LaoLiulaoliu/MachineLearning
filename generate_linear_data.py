@@ -22,7 +22,7 @@ def plot():
     for i in itertools.combinations(arange(-NUM, NUM, 1), 2):
         X.append(i[0])
         Y.append(i[1])
-    X, Y = array(X), array(Y)
+    X, Y = array(X, copy=False), array(Y, copy=False)
     Z = function(X, Y)
 
     fig = plt.figure()

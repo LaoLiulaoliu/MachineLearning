@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     # 16 samples have missing feature values, denoted by "?"
     data, _ = toolkit.load_data('../breast-cancer-wisconsin.data', label=False, sep=',')
-    labels = np.array(['Sample code number', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell Shape', 'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei', 'Bland Chromatin', 'Normal Nucleoli', 'Mitoses', 'Class'])
+    labels = np.array(['Sample code number', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell Shape', 'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei', 'Bland Chromatin', 'Normal Nucleoli', 'Mitoses', 'Class'], copy=False)
     r = make_tree(data[:, 1:], labels[1:])
     print(r)
 
