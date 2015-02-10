@@ -93,8 +93,8 @@ def draw_tree(tree):
 
     def get_width(tree):
         width = 0
-        for label, value_tree in tree:
-            for value, blend in value_tree:
+        for label, value_tree in tree.iteritems():
+            for value, blend in value_tree.iteritems():
                 if isinstance(blend, dict):
                     width += get_width(blend)
                 else:
@@ -103,9 +103,9 @@ def draw_tree(tree):
 
     def get_height(tree):
         height = 1
-        for label, value_tree in tree:
+        for label, value_tree in tree.iteritems():
             max_sub_height = 1
-            for value, blend in value_tree:
+            for value, blend in value_tree.iteritems():
                 if isinstance(blend, dict):
                     sub_height = get_height(blend)
                     if sub_height > max_sub_height:
@@ -126,4 +126,5 @@ if __name__ == '__main__':
 
     r = make_tree(np.mat([[1, 1, 'yes'], [1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']]), np.array(['no surfacing','flippers', 'Class']))
     print(r)
+    draw_tree(r)
 
