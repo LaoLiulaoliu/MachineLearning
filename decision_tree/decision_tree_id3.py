@@ -90,15 +90,30 @@ def load_tree():
         return cPickle.load(fd)
 
 def draw_tree(tree):
+
     def get_width(tree):
         width = 0
-        for label, sub_tree in tree:
-            for value, blend in sub_tree:
+        for label, value_tree in tree:
+            for value, blend in value_tree:
                 if isinstance(blend, dict):
                     width += get_width(blend)
                 else:
                     width += 1
         return width
+
+    def get_height(tree):
+        height = 1
+        for label, value_tree in tree:
+            max_sub_height = 1
+            for value, blend in value_tree:
+                if isinstance(blend, dict):
+                    sub_height = get_height(blend)
+                    if sub_height > max_sub_height:
+                        max_sub_height = sub_height
+        return height + max_sub_height
+
+    width = get_width(tree)
+    height = get_height(tree)
 
 
 if __name__ == '__main__':
