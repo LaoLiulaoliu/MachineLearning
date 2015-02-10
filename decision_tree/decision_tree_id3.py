@@ -90,6 +90,7 @@ def load_tree():
         return cPickle.load(fd)
 
 def draw_tree(tree):
+    import matplotlib.pyplot as plt
 
     def get_width(tree):
         width = 0
