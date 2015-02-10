@@ -9,7 +9,7 @@ from collections import Counter
 import numpy as np
 
 import os, sys
-parent_dir = os.path.abspath(os.path.dirname(__file__) + '..')
+parent_dir = os.path.abspath(os.path.dirname(__file__) + './../')
 sys.path.append(parent_dir)
 import toolkit
 
@@ -37,7 +37,8 @@ def choose_best_feature(data):
     The last column of data is Class.
     """
     m, n = np.shape(data)
-    mini_entropy = 10000.
+    if n == 2: return 0
+    mini_entropy = -1.
     best_feature = -1
 
     for i in range(n-1):
@@ -49,7 +50,7 @@ def choose_best_feature(data):
             branch_entropy = source_entropy( data[ (data[:, i].flatten().A[0] == val), -1 ] )
             entropy += times / n * branch_entropy
 
-        if entropy < mini_entropy:
+        if mini_entropy < 0 or entropy < mini_entropy:
             mini_entropy = entropy
             best_feature = i
     return best_feature
@@ -60,12 +61,12 @@ def make_tree(data, labels):
         If the tree only have class column, this branch over.
     """
     _, n = np.shape(data)
-    if len( set(data[:, -1].flatten().A[0]) ) == 1:
-        return data[0, -1]
     if n == 1:
         counter = Counter()
         for value in data.flatten().A[0]: counter[value] += 1
         return counter.most_common(1)[0][0]
+    if len( set(data[:, -1].flatten().A[0]) ) == 1:
+        return data[0, -1]
 
     best_feature = choose_best_feature(data)
     tree = { labels[best_feature]: {} }
@@ -87,6 +88,18 @@ def load_tree():
     import cPickle
     with open('trees.txt') as fd:
         return cPickle.load(fd)
+
+def draw_tree(tree):
+    def get_width(tree):
+        width = 0
+        for label, sub_tree in tree:
+            for value, blend in sub_tree:
+                if isinstance(blend, dict):
+                    width += get_width(blend)
+                else:
+                    width += 1
+        return width
+
 
 if __name__ == '__main__':
 
