@@ -115,7 +115,14 @@ def draw_tree(tree):
 
     width = get_width(tree)
     height = get_height(tree)
+    x = - 0.5 / width
+    y = 1.
 
+    fig = plt.figure()
+    fig.clf()
+    plt.add_subplot(111, frame_on=False)
+
+    plt.show()
 
 if __name__ == '__main__':
 
