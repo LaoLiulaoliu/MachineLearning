@@ -90,6 +90,9 @@ def load_tree():
         return cPickle.load(fd)
 
 
+
+########  plot decision tree code
+
 def get_width(tree):
     width = 0
     for label, value_tree in tree.iteritems():
@@ -111,23 +114,6 @@ def get_height(tree):
                     max_sub_height = sub_height
     return height + max_sub_height
 
-def get_width_height(tree):
-    width = 0
-    height = 0
-    for label, value_tree in tree.iteritems():
-        for value, blend in value_tree.iteritems():
-            if isinstance(blend, dict):
-                w, h = get_width_height(blend)
-                width += w
-                sub_height = h + 1
-            else:
-                width += 1
-                sub_height = 1
-            if sub_height > height:
-                height = sub_height
-    return width, height
-
-
 def draw_tree(tree):
     """ traversing a tree recursively, is depth first traversal from left to right.
 
@@ -138,52 +124,53 @@ def draw_tree(tree):
     import matplotlib.pyplot as plt
 
     draw_tree.leaves = get_width(tree)
-    draw_tree.layers = get_height(tree)
+    draw_tree.layers = get_height(tree) - 1 # 3 layers means 2 line segment
     draw_tree.offset_x = - 0.5 / draw_tree.leaves
     draw_tree.offset_y = 1.
 
     def plot_this_arrow_text(parent_node, current_node, decision_text):
         middle_x = parent_node[0] + (current_node[0] - parent_node[0]) / 2.
         middle_y = parent_node[1] + (current_node[1] - parent_node[1]) / 2.
-        draw_tree.axes.text(middle_x, middle_y, decision_text, rotation=15)
+        draw_tree.axes.text(middle_x, middle_y, decision_text,
+                            va='center', ha='center', rotation=35)
 
-    def plot_this_node(node_text, parent_node, current_node):
-        draw_tree.axes.annotate(node_text, xy=parent_node, xytext=current_node)
+    def plot_this_node(node_text, parent_node, current_node, boxstyle):
+        draw_tree.axes.annotate(node_text, xy=parent_node, xytext=current_node,
+                                arrowprops={'arrowstyle': '<-'},
+                                xycoords='axes fraction', textcoords='axes fraction',
+                                va='center', ha='center',
+                                bbox={'boxstyle': boxstyle, 'fc': '0.9'})
 
-    def draw(tree, parent_node, decision_text):
-
+    def draw_recursively(tree, parent_node, decision_text):
         width = get_width(tree)
         height = get_height(tree)
         current_node = (draw_tree.offset_x + .5 * width / draw_tree.leaves, draw_tree.offset_y)
 
         plot_this_arrow_text(parent_node, current_node, decision_text)
-        plot_this_node(tree.keys()[0], parent_node, current_node)
+        plot_this_node(tree.keys()[0], parent_node, current_node, 'round4')
 
         draw_tree.offset_y -= 1. / draw_tree.layers
         for decision_txt, sub_tree in tree.values()[0].iteritems():
             if isinstance(sub_tree, dict):
-                draw(sub_tree, current_node, decision_txt)
+                draw_recursively(sub_tree, current_node, decision_txt)
             else:
                 draw_tree.offset_x += 1. / draw_tree.leaves
                 child_node = (draw_tree.offset_x, draw_tree.offset_y)
                 plot_this_arrow_text(current_node, child_node, decision_txt)
-                plot_this_node(sub_tree, current_node, child_node)
+                plot_this_node(sub_tree, current_node, child_node, 'circle')
 
         draw_tree.offset_y += 1. / draw_tree.layers
 
-
-    fig = plt.figure()
+    fig = plt.figure(facecolor='white')
     fig.clf()
-    draw_tree.axes = fig.add_subplot(111, frameon=False)
-
-    draw(tree, (.5, 1.), 'decision tree')
-
+    draw_tree.axes = fig.add_subplot(111, frameon=False, xticks=[], yticks=[])
+    draw_recursively(tree, (.5, 1.), '')
     plt.show()
 
 if __name__ == '__main__':
 
     # 16 samples have missing feature values, denoted by "?"
-    data, _ = toolkit.load_data('../breast-cancer-wisconsin.data', label=False, sep=',')
+    data, _ = toolkit.load_data('../breast-cancer-wisconsin.data', label=False, sep=',', func=int)
     labels = np.array(['Sample code number', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell Shape', 'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei', 'Bland Chromatin', 'Normal Nucleoli', 'Mitoses', 'Class'], copy=False)
     r = make_tree(data[:, 1:], labels[1:])
     print(r)
