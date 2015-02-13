@@ -89,38 +89,90 @@ def load_tree():
     with open('trees.txt') as fd:
         return cPickle.load(fd)
 
+
+def get_width(tree):
+    width = 0
+    for label, value_tree in tree.iteritems():
+        for value, blend in value_tree.iteritems():
+            if isinstance(blend, dict):
+                width += get_width(blend)
+            else:
+                width += 1
+    return width
+
+def get_height(tree):
+    height = 1
+    for label, value_tree in tree.iteritems():
+        max_sub_height = 1
+        for value, blend in value_tree.iteritems():
+            if isinstance(blend, dict):
+                sub_height = get_height(blend)
+                if sub_height > max_sub_height:
+                    max_sub_height = sub_height
+    return height + max_sub_height
+
+def get_width_height(tree):
+    width = 0
+    height = 0
+    for label, value_tree in tree.iteritems():
+        for value, blend in value_tree.iteritems():
+            if isinstance(blend, dict):
+                w, h = get_width_height(blend)
+                width += w
+                sub_height = h + 1
+            else:
+                width += 1
+                sub_height = 1
+            if sub_height > height:
+                height = sub_height
+    return width, height
+
+
 def draw_tree(tree):
+    """ traversing a tree recursively, is depth first traversal from left to right.
+
+    子树有N个叶子节点，则子树根节点应该放置的X轴位置为:
+        current_position + .5 * N / total_leaf_number
+    当前位置 + (总叶子节点数分之一的其中N份，再除以2取在左右中间)
+    """
     import matplotlib.pyplot as plt
 
-    def get_width(tree):
-        width = 0
-        for label, value_tree in tree.iteritems():
-            for value, blend in value_tree.iteritems():
-                if isinstance(blend, dict):
-                    width += get_width(blend)
-                else:
-                    width += 1
-        return width
+    leaves = get_width(tree)
+    layers = get_height(tree)
+    offset_x = - 0.5 / leaves
+    offset_y = 1.
 
-    def get_height(tree):
-        height = 1
-        for label, value_tree in tree.iteritems():
-            max_sub_height = 1
-            for value, blend in value_tree.iteritems():
-                if isinstance(blend, dict):
-                    sub_height = get_height(blend)
-                    if sub_height > max_sub_height:
-                        max_sub_height = sub_height
-        return height + max_sub_height
+    def plot_this_arrow_text(parent_node, current_node, decision_text):
+        middle_x = parent_node[0] + (current_node[0] - parent_node[0]) / 2.
+        middle_y = parent_node[1] + (current_node[1] - parent_node[1]) / 2.
+        draw_tree.axes.text(middle_x, middle_y, decision_text, rotation=15)
 
-    width = get_width(tree)
-    height = get_height(tree)
-    x = - 0.5 / width
-    y = 1.
+    def plot_this_node(node_text, parent_node, current_node)
+        draw_tree.axes.annotate(node_text, xy=parent_node, xytext=current_node)
+
+    def draw(tree, parent_node, decision_text):
+        width = get_width(tree)
+        height = get_height(tree)
+        current_node = (offset_x + .5 * width / leaves, offset_y)
+
+        plot_this_arrow_text(parent_node, current_node, decision_text)
+        plot_this_node(tree.keys()[0], parent_node, current_node)
+
+        offset_y -= 1. / layers
+        for decision_txt, sub_tree in tree.values()[0].iteritems():
+            if isinstance(sub_tree, dict):
+                draw(sub_tree, current_node, decision_txt)
+            else:
+                pass
+
+        offset_y += 1. / layers
+
 
     fig = plt.figure()
     fig.clf()
-    plt.add_subplot(111, frame_on=False)
+    draw_tree.axes = plt.add_subplot(111, frameon=False)
+
+    draw(tree, (.5, 1.), 'decision tree')
 
     plt.show()
 
