@@ -27,7 +27,7 @@ def process_data(fname='dating.data'):
     if not hasattr(process_data, '_loaded'):
         setattr(process_data, '_loaded', ())
 
-        X, Y = toolkit.load_data(fname, sep='\t')
+        X, Y = toolkit.load_data(fname, sep='\t', func=float)
         x_normalized, x_min, x_range = toolkit.normalizing(X)
         process_data._loaded = (x_normalized, x_min, x_range, Y)
 
@@ -61,7 +61,7 @@ class Test(object):
     """ the ratio can be tuned
     """
     def __init__(self, fname='dating.data', sep='\t'):
-        self.X, self.Y = toolkit.load_data(fname=fname, sep=sep)
+        self.X, self.Y = toolkit.load_data(fname=fname, sep=sep, func=float)
 
     def cross_validation(self, ratio=0.1):
         """ Usually use 10% random data as test data
