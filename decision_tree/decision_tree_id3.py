@@ -115,12 +115,6 @@ def get_height(tree):
     return height + max_sub_height
 
 def draw_tree(tree):
-    """ traversing a tree recursively, is depth first traversal from left to right.
-
-    子树有N个叶子节点，则子树根节点应该放置的X轴位置为:
-        current_position + .5 * N / total_leaf_number
-    当前位置 + (总叶子节点数分之一的其中N份，再除以2取在左右中间)
-    """
     import matplotlib.pyplot as plt
 
     draw_tree.leaves = get_width(tree)
@@ -142,8 +136,13 @@ def draw_tree(tree):
                                 bbox={'boxstyle': boxstyle, 'fc': '0.9'})
 
     def draw_recursively(tree, parent_node, decision_text):
+        """ traversing a tree recursively, is depth first traversal from left to right.
+
+        子树有N个叶子节点，则子树根节点应该放置的X轴位置为:
+            current_position + .5 * N / total_leaf_number
+        当前位置 + (总叶子节点数分之一的其中N份，再除以2取在左右中间)
+        """
         width = get_width(tree)
-        height = get_height(tree)
         current_node = (draw_tree.offset_x + .5 * width / draw_tree.leaves, draw_tree.offset_y)
 
         plot_this_arrow_text(parent_node, current_node, decision_text)
