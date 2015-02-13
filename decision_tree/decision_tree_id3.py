@@ -137,40 +137,44 @@ def draw_tree(tree):
     """
     import matplotlib.pyplot as plt
 
-    leaves = get_width(tree)
-    layers = get_height(tree)
-    offset_x = - 0.5 / leaves
-    offset_y = 1.
+    draw_tree.leaves = get_width(tree)
+    draw_tree.layers = get_height(tree)
+    draw_tree.offset_x = - 0.5 / draw_tree.leaves
+    draw_tree.offset_y = 1.
 
     def plot_this_arrow_text(parent_node, current_node, decision_text):
         middle_x = parent_node[0] + (current_node[0] - parent_node[0]) / 2.
         middle_y = parent_node[1] + (current_node[1] - parent_node[1]) / 2.
         draw_tree.axes.text(middle_x, middle_y, decision_text, rotation=15)
 
-    def plot_this_node(node_text, parent_node, current_node)
+    def plot_this_node(node_text, parent_node, current_node):
         draw_tree.axes.annotate(node_text, xy=parent_node, xytext=current_node)
 
     def draw(tree, parent_node, decision_text):
+
         width = get_width(tree)
         height = get_height(tree)
-        current_node = (offset_x + .5 * width / leaves, offset_y)
+        current_node = (draw_tree.offset_x + .5 * width / draw_tree.leaves, draw_tree.offset_y)
 
         plot_this_arrow_text(parent_node, current_node, decision_text)
         plot_this_node(tree.keys()[0], parent_node, current_node)
 
-        offset_y -= 1. / layers
+        draw_tree.offset_y -= 1. / draw_tree.layers
         for decision_txt, sub_tree in tree.values()[0].iteritems():
             if isinstance(sub_tree, dict):
                 draw(sub_tree, current_node, decision_txt)
             else:
-                pass
+                draw_tree.offset_x += 1. / draw_tree.leaves
+                child_node = (draw_tree.offset_x, draw_tree.offset_y)
+                plot_this_arrow_text(current_node, child_node, decision_txt)
+                plot_this_node(sub_tree, current_node, child_node)
 
-        offset_y += 1. / layers
+        draw_tree.offset_y += 1. / draw_tree.layers
 
 
     fig = plt.figure()
     fig.clf()
-    draw_tree.axes = plt.add_subplot(111, frameon=False)
+    draw_tree.axes = fig.add_subplot(111, frameon=False)
 
     draw(tree, (.5, 1.), 'decision tree')
 
