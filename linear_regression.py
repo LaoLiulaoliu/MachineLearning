@@ -3,23 +3,22 @@
 # Author: Yuande Liu <miracle (at) gmail.com>
 
 from __future__ import print_function
-from numpy import *
+
+import  numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
-def load_data(fname='data.txt'):
-    with open(fname) as fd:
-        N = len( fd.readline().strip().split() )
 
+def load_data(fname='data.txt'):
     data_array = []
     label_array = []
     with open(fname) as fd:
         for line in fd:
             line = line.strip().split()
-            data_array.append( [1.0] + [float(i) for i in line[:N-1]] )
+            data_array.append( [1.] + [float(i) for i in line[:-1]] )
             label_array.append( float(line[-1]) )
-    return mat(data_array), mat(label_array).T
+    return np.mat(data_array), np.mat(label_array).T
 
 
 def normal_equation(X, Y):
@@ -31,18 +30,25 @@ def normal_equation(X, Y):
     [(n, m) * (m, n)]' * (n, m) * (m, 1) -> (n, 1)
     """
     theta = (X.T * X)
-    if linalg.det(theta) == 0:
+    if np.linalg.det(theta) == 0:
         print("numpy.linalg.linalg.LinAlgError: Singular matrix' not reversible")
         return []
     theta = theta.I * X.T * Y
     return theta
 
+def locally_weighted_linear_regression(data_item, X, Y, k=0.8):
+    """
+    weighted: square matrix, give every data item a different weight.
+    """
+    m, n = np.shape(X)
+    weighted = np.eye(m)
+    np.exp( -.5 * (data_item - X) / k**2 )
 
 def feature_normalize(X):
     """ `var` replace `std` also works
     """
-    X_mean = mean(X, axis=0)
-    X_std = std(X, axis=0)
+    X_mean = np.mean(X, axis=0)
+    X_std = np.std(X, axis=0)
     X_std[0, 0] = 1
     X_normalize = (X - X_mean) / X_std
     X_normalize[:, 0] = 1.0
@@ -55,18 +61,18 @@ def feature_scaling(X):
     compare to normal equation with no feature scaling.
     * If we have more than one feature, we need feature scaling.
     """
-    X_mean = mean(X, axis=0)
-    X_std = std(X, axis=0)
+    X_mean = np.mean(X, axis=0)
+    X_std = np.std(X, axis=0)
     X_std[0, 0] = 1
 
-    m, n = shape(X)
-    norm_data = X - tile(X_mean, (m, 1))
-    norm_data = norm_data / tile(X_std, (m, 1))
+    m, n = np.shape(X)
+    norm_data = X - np.tile(X_mean, (m, 1))
+    norm_data = norm_data / np.tile(X_std, (m, 1))
     norm_data[:, 0] = 1.0
     return norm_data, X_mean, X_std
 
 def cost_function(X, Y, theta):
-    m, n = shape(X)
+    m, n = np.shape(X)
     cost = X * theta - Y # cost.shape = (m, 1)
     J = 0.5 / m * cost.T * cost
     return J
@@ -77,20 +83,20 @@ def plot_cost_function(X, Y):
     """
     upper_bound = 2* X.max()
     lower_bound = 2* X.min()
-    theta0_vals = linspace(lower_bound, upper_bound, 100)
-    theta1_vals = linspace(lower_bound, upper_bound, 100)
+    theta0_vals = np.linspace(lower_bound, upper_bound, 100)
+    theta1_vals = np.linspace(lower_bound, upper_bound, 100)
     len_0, len_1 = len(theta0_vals), len(theta1_vals)
-    J_vals = zeros((len_0, len_1))
+    J_vals = np.zeros((len_0, len_1))
 
     for i in xrange(len_0):
         for j in xrange(len_1):
-            theta = mat( [1, theta0_vals[i], theta1_vals[j]] ).T
+            theta = np.mat( [1, theta0_vals[i], theta1_vals[j]] ).T
             J_vals[i, j] = cost_function(X, Y, theta)
 
     fig = plt.figure()
     fig.suptitle("cost function J change on theta")
     ax = fig.add_subplot(111, projection='3d')
-    theta0_vals, theta1_vals = meshgrid(theta0_vals, theta1_vals)
+    theta0_vals, theta1_vals = np.meshgrid(theta0_vals, theta1_vals)
     surf = ax.plot_surface( theta0_vals, theta1_vals, J_vals,
                             rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False )
     ax.set_xlabel('theta0')
@@ -105,8 +111,8 @@ def batch_gradient_descent(X, Y, theta, alpha=0.01, iters=1000):
     :param theta: theta is an array
     :param iters: iters times
     """
-    m, n = shape(X)
-    cost_history = zeros((iters, 1))
+    m, n = np.shape(X)
+    cost_history = np.zeros((iters, 1))
 
     for i in xrange(iters):
         theta -= alpha/m * (X.T * (X * theta - Y))
@@ -135,7 +141,7 @@ def plot_result(X, Y, theta):
     ax = fig.add_subplot(212, projection='3d')
     ax.scatter(a, b, c, c='r', marker='o')
 
-    p, q = meshgrid(a, b)
+    p, q = np.meshgrid(a, b)
     surf = ax.plot_surface( p, q, (X * theta).getA() )
     ax.set_xlabel('X1 label')
     ax.set_ylabel('X2 label')
@@ -151,7 +157,7 @@ def main():
     parser.add_argument('--learn', '-l', help="plot one learning rate's convergence")
     option = parser.parse_args()
 
-    data, label = load_data()
+    data, label = load_data('data.txt')
     data_norm, data_mean, data_std = feature_scaling(data)
     theta = zeros((shape(data_norm)[1], 1))
 
