@@ -8,7 +8,6 @@ from __future__ import division
 from toolkit import load_data, euclidean_distance
 import numpy as np
 
-data, _ = load_data('data.txt', label=False, sep='\t', float)
 
 def rand_k_centroids(data, k=3):
     m, n = np.shape(data)
@@ -16,7 +15,7 @@ def rand_k_centroids(data, k=3):
     for j in range(n):
         min_j = np.min(data[:, j])
         max_j = np.max(data[:, j])
-        centroids[:, j] = min_j + (max_j - min_j) * np.random.random((k, 1))
+        centroids[:, j] = min_j + (max_j - min_j) * np.random.rand(k, 1)
     return centroids
 
 def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand_k_centroids):
@@ -40,4 +39,11 @@ def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand
             if indices[i, 0] != min_index:
                 changed = True
 
+        for centre in range(k):
+            points = data[ np.nonzero(indices[:, 0].A == centre)[0] ]
+            centroids[centre, :] = mean(points, axis=0)
+    return centroids
 
+if __name__ == '__main__':
+    data, _ = load_data('data.txt', label=False, sep='\t', float)
+    kmeans(data, 3)
