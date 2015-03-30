@@ -11,7 +11,8 @@ import itertools
 NUM = 10
 
 def function(x, y):
-    return 3 + 1.2 * x + 5 * y + 0.4 * cos(10 * x) + 0.6 * random.normal(0, 1)
+    """三维函数，但可以忽略y 只用两个维度 """
+    return 3 + 1.2 * x + 5 * y + 0.4 * cos(10 * x) + 0.6 * random.normal(0, 1, x.shape)
 
 def plot():
 
@@ -34,9 +35,9 @@ def plot():
 
     # 误差的分布, 因为是公式制造的误差，所以部分系统误差满足高斯分布，另一部分是余弦函数
     ax = fig.add_subplot(2, 2, 2)
-    ax.plot(lin_x, 0.4*cos(10*lin_x)+0.6*random.normal(0,1))
+    ax.plot(lin_x, 0.4*cos(10*lin_x)+0.6*random.normal(0,1,lin_x.shape))
 
-    # 二维情况下，线性函数对带有噪声数据点的拟合
+    # 二维情况下，线性函数对带有噪声数据点的拟合示意
     ax = fig.add_subplot(2, 2, 3)
     ax.scatter(lin_x, lin_y, s=2, c='red', marker='o')
     ax.plot(lin_x, 3+1.2*lin_x, 'g')

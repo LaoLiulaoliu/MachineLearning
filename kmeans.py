@@ -20,7 +20,7 @@ def rand_k_centroids(data, k=3):
 
 def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand_k_centroids):
     m, n = np.shape(data)
-    indices = mp.mat( -np.ones(m, 2) )
+    indices = mp.mat( -np.ones(m, 2) ) # not initial with 0, in case the compare changed conflict
     changed = True
 
     centroids = create_centroids(data, k)
@@ -41,9 +41,10 @@ def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand
 
         for centre in range(k):
             points = data[ np.nonzero(indices[:, 0].A == centre)[0] ]
-            centroids[centre, :] = mean(points, axis=0)
+            centroids[centre, :] = np.mean(points, axis=0)
     return centroids
 
 if __name__ == '__main__':
     data, _ = load_data('data.txt', label=False, sep='\t', float)
     kmeans(data, 3)
+

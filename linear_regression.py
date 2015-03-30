@@ -11,8 +11,7 @@ from matplotlib import cm
 
 
 def load_data(fname='data.txt'):
-    data_array = []
-    label_array = []
+    data_array, label_array = [], []
     with open(fname) as fd:
         for line in fd:
             line = line.strip().split()
