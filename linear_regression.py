@@ -129,13 +129,16 @@ def tune_learning_rate(cost_history):
     plt.title('Different alpha have different learning rate')
     plt.show()
 
-def plot_result(X, Y, theta):
+def plot_result(X, Y, theta, X_norm=None):
+    """ X only have two column variables
+    """
+    if X_norm is not None:
+        X = X_norm
     a, b, c = X[:, 1].getA(), X[:, 2].getA(), Y.getA()
 
     fig = plt.figure()
     ax = fig.add_subplot(211)
     ax.hist(a)
-
 
     ax = fig.add_subplot(212, projection='3d')
     ax.scatter(a, b, c, c='r', marker='o')
@@ -158,7 +161,8 @@ def main():
 
     data, label = load_data('data.txt')
     data_norm, data_mean, data_std = feature_scaling(data)
-    theta = zeros((shape(data_norm)[1], 1))
+    # initialize theta as zero
+    theta = np.zeros((np.shape(data_norm)[1], 1))
 
     print(option.cost, option.normal, option.learn)
     if option.cost:
@@ -169,7 +173,7 @@ def main():
     if option.learn:
         theta, cost_history = batch_gradient_descent(data_norm, label, theta)
         tune_learning_rate(cost_history)
-        plot_result(data, label, theta)
+        plot_result(data, label, theta, data_norm)
 
 
 if __name__ == '__main__':
