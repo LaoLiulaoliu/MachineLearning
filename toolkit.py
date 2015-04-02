@@ -23,6 +23,8 @@ def normalizing(X):
     return x_normalized, x_min, x_range
 
 def euclidean_distance(A, B):
+    """ A, B are array or matrix
+    """
     return np.sqrt( np.power(A - B, 2).sum(axis=1) )
 
 

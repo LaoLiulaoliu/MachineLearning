@@ -35,14 +35,6 @@ def normal_equation(X, Y):
     theta = theta.I * X.T * Y
     return theta
 
-def locally_weighted_linear_regression(data_item, X, Y, k=0.8):
-    """
-    weighted: square matrix, give every data item a different weight.
-    """
-    m, n = np.shape(X)
-    weighted = np.eye(m)
-    np.exp( -.5 * (data_item - X) / k**2 )
-
 def feature_normalize(X):
     """ `var` replace `std` also works
     """
@@ -150,6 +142,43 @@ def plot_result(X, Y, theta, X_norm=None):
     ax.set_zlabel('Y label')
 
     plt.show()
+
+
+def locally_weighted_linear_regression(data_item, X, Y, k=0.8):
+    """
+    weighted: square matrix, give every data item a different weight.
+    theta: n x 1
+    """
+    m, n = np.shape(X)
+    weighted = np.eye(m)
+    for i in range(m):
+        difference = data_item - X[i] 
+        weighted[i, i] = np.exp( -.5 * difference * difference.T / k**2 )
+
+    theta = X.T * weighted * X
+    if np.linalg.det(theta) == 0:
+        print("numpy.linalg.linalg.LinAlgError: Singular matrix' not reversible")
+        return
+    theta = theta.I * X.T * weighted * Y
+    return theta
+
+def draw_2d_linear_regression(X, Y, k):
+    m, n = np.shape(X)
+    predict = np.zeros( np.shape(Y) )
+    for i in range(m):
+        theta = locally_weighted_linear_regression(X[i], X, Y, k)
+        predict[i] = X[i] * theta
+
+    order = X[:, 1].argsort(0)
+    X_order = X[order][:, 0, :] # X[order] is 3d ( m x 1 x 1 )
+    predict_order = predict[order]
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(X_order, predict_order)
+    ax.scatter(X[:, 1].flatten().A[0], Y.flatten().A[0], s=2, c='red')
+    plt.show()
+
 
 def main():
     import argparse
