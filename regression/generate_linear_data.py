@@ -12,7 +12,7 @@ NUM = 10
 
 def function(x, y):
     """三维函数，但可以忽略y 只用两个维度 """
-    return 3 + 1.2 * x + 5 * y + 0.4 * cos(10 * x) + 0.6 * random.normal(0, 1, x.shape)
+    return 3 + 1.2 * x + 5 * y + 0.4 * cos(10 * x) + 0.6 * random.normal(0, 1, shape(x))
 
 def plot():
 
@@ -54,12 +54,19 @@ def plot():
     plt.show()
 
 def generate_data():
-    with open('data.txt', 'w') as fd:
-        for i in range(1000):
+    with open('linear_data_3d.txt', 'w') as fd:
+        for i in range(200):
             x = random.random_sample() * 2*NUM - NUM
             y = random.random_sample() * 2*NUM - NUM
             z = function(x, y)
             fd.write('{}\t{}\t{}\n'.format(x, y, z))
+
+    with open('linear_data_2d.txt', 'w') as fd:
+        for i in range(200):
+            x = random.random_sample() * 2*NUM - NUM
+            y = 0
+            z = function(x, y)
+            fd.write('{}\t{}\n'.format(x, z))
 
 
 if __name__ == '__main__':

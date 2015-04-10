@@ -10,7 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
 
-def load_data(fname='data.txt'):
+def load_data(fname='linear_data_3d.txt'):
     data_array, label_array = [], []
     with open(fname) as fd:
         for line in fd:
@@ -144,6 +144,9 @@ def plot_result(X, Y, theta, X_norm=None):
     plt.show()
 
 
+############ locally weighted linear regression
+# 随着核k 的减小，训练误差逐渐变小，出现过拟合现象。测试误差在增大。
+# 要找到训练误差减小，测试误差还没开始呈指数级增长的k，抓住数据潜在模式
 def locally_weighted_linear_regression(data_item, X, Y, k=0.8):
     """
     weighted: square matrix, give every data item a different weight.
@@ -155,30 +158,80 @@ def locally_weighted_linear_regression(data_item, X, Y, k=0.8):
         difference = data_item - X[i] 
         weighted[i, i] = np.exp( -.5 * difference * difference.T / k**2 )
 
+#    print(weighted) # most element in weighted is 0
     theta = X.T * weighted * X
     if np.linalg.det(theta) == 0:
-        print("numpy.linalg.linalg.LinAlgError: Singular matrix' not reversible")
+        print("numpy.linalg.linalg.LinAlgError: Singular matrix not reversible")
         return
     theta = theta.I * X.T * weighted * Y
     return theta
 
-def draw_2d_linear_regression(X, Y, k):
+def lwlr_whole_dataset(X_shadow, X, Y, k):
     m, n = np.shape(X)
     predict = np.zeros( np.shape(Y) )
     for i in range(m):
-        theta = locally_weighted_linear_regression(X[i], X, Y, k)
-        predict[i] = X[i] * theta
+        theta = locally_weighted_linear_regression(X_shadow[i], X, Y, k)
+        predict[i] = X_shadow[i] * theta
+    return predict
+
+######################
+def regression_error(Y, predict):
+    return np.power(Y - predict, 2).sum()
+
+def one_test_of_the_kernel(X, Y, k):
+    predict = lwlr_whole_dataset(X[0:100], X[0:100], Y[0:100], k)
+    error = regression_error(Y[0:100], predict)
+    forecast_predict = lwlr_whole_dataset(X[100:200], X[0:100], Y[0:100], k)
+    forecast_error = regression_error(Y[100:200], forecast_predict)
+    print('k is {}, error {}, forecast error {}'.format(k, error, forecast_error))
+
+def test_the_weighted_kernel(X, Y):
+    """ As the value of k goes down, error goes down too, but forecast error goes up.
+        Choose the right one.
+    """
+    values = [5.0, 2.0, 1.0, 0.7, 0.5, 0.2, 0.1, 0.077]
+    for k in values:
+        one_test_of_the_kernel(X, Y, k)
+
+    theta = normal_equation(X[0:100], Y[0:100])
+    print('normal equation error {}'.format(regression_error(Y[100:200], X[100:200] * theta)))
+
+
+#####################
+def sort_data_for_plot(X, Y, k):
+    """ plot need sorted data
+    """
+    predict = lwlr_whole_dataset(X, X, Y, k)
 
     order = X[:, 1].argsort(0)
-    X_order = X[order][:, 0, :] # X[order] is 3d ( m x 1 x 1 )
-    predict_order = predict[order]
+    X_order = X[order][:, 0, 1] # X[order] is 3d ( m x 1 x 1 )
+    predict_order = predict[order][:, 0, :]
+    return X_order, predict_order
 
+
+def compare_draw_2d_lwlr(X, Y):
+    """ x axes is X[:, 1], y axes is Y
+        try weighted 1.0, 0.2, 0.05
+        最小核 can minimum error，but have overfitting
+    """
     fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(X_order, predict_order)
-    ax.scatter(X[:, 1].flatten().A[0], Y.flatten().A[0], s=2, c='red')
-    plt.show()
 
+    ax = fig.add_subplot(221)
+    X_order, predict_order = sort_data_for_plot(X, Y, k=1.0)
+    ax.scatter(X[:, 1].flatten().A[0], Y.flatten().A[0], s=2, c='red')
+    ax.plot(X_order, predict_order, 'g')
+
+    ax = fig.add_subplot(222)
+    X_order, predict_order = sort_data_for_plot(X, Y, k=0.2)
+    ax.scatter(X[:, 1].flatten().A[0], Y.flatten().A[0], s=2, c='red')
+    ax.plot(X_order, predict_order, 'g')
+
+    ax = fig.add_subplot(223)
+    X_order, predict_order = sort_data_for_plot(X, Y, k=0.05)
+    ax.scatter(X[:, 1].flatten().A[0], Y.flatten().A[0], s=2, c='red')
+    ax.plot(X_order, predict_order, 'g')
+
+    plt.show()
 
 def main():
     import argparse
@@ -186,14 +239,15 @@ def main():
     parser.add_argument('--cost', '-c', help="plot cost function", action="store_true")
     parser.add_argument('--normal', '-n', help="calculate normal equation", action="store_true")
     parser.add_argument('--learn', '-l', help="plot one learning rate's convergence")
+    parser.add_argument('--weighted', '-w', help="draw locally weighted linear regression", action="store_true")
     option = parser.parse_args()
 
-    data, label = load_data('data.txt')
+    data, label = load_data('linear_data_3d.txt')
     data_norm, data_mean, data_std = feature_scaling(data)
     # initialize theta as zero
     theta = np.zeros((np.shape(data_norm)[1], 1))
 
-    print(option.cost, option.normal, option.learn)
+    print(option.cost, option.normal, option.learn, option.weighted)
     if option.cost:
         plot_cost_function(data, label)
     if option.normal:
@@ -203,6 +257,10 @@ def main():
         theta, cost_history = batch_gradient_descent(data_norm, label, theta)
         tune_learning_rate(cost_history)
         plot_result(data, label, theta, data_norm)
+    if option.weighted:
+        data, label = load_data('linear_data_2d.txt')
+        test_the_weighted_kernel(data, label) 
+        compare_draw_2d_lwlr(data, label)
 
 
 if __name__ == '__main__':
