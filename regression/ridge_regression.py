@@ -66,12 +66,13 @@ def cross_validation(X, Y):
     _, X_mean, X_std = feature_normalize(X[:500])
     X_test = (X[500:] - X_mean) / X_std
     for i, weight in enumerate(ridge_weights):
-# [:, np.newasix] change (3,) to (3,1)
+        # [:, np.newasix] change (3,) to (3,1)
         error = np.power(X_test * weight[:, np.newaxis] - Y[500:], 2).sum()
         print('alpha {}, test error is {}'.format(alphas[i], error))
 
 def cross_validation_10(X, Y, num=10):
     """ 10折
+        取最后一折的ridge_weights 来选缩减系数
     """
     m, n = np.shape(X)
     errors = np.zeros((num, 60))
