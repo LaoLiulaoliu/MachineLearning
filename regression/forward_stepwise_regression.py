@@ -30,6 +30,8 @@ def stepwise(X, Y, epsilon=0.01, iteration=200):
                 if minimum_error < 0 or error < minimum_error:
                     minimum_error = error
                     fit_theta = theta_test
+        # minimum_error 的震荡，参数theta 也来回震荡
+        # 422.440802605, 422.411694768, 422.440802605, 422.411694768
         theta = fit_theta
         thetas[i] = theta.T
     return thetas
