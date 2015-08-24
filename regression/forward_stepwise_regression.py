@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Yuande Liu <miracle (at) gmail.com>
+# Author: Yuande Liu <miraclecome (at) gmail.com>
 #
 # Stepwise regression analysis the important features,
 # stop collecting the inconsequential features timely.

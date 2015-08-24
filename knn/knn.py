@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Yuande Liu <miracle (at) gmail.com>
+# Author: Yuande Liu <miraclecome (at) gmail.com>
 #
 # knn need to normalize the data, or else the feature data
 # with large scale will dominate the distance calculation,
