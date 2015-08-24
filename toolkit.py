@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Yuande Liu <miracle (at) gmail.com>
+# Author: Yuande Liu <miraclecome (at) gmail.com>
 
-from __future__ import print_function
-from __future__ import division
+from __future__ import print_function, division
 
 import numpy as np
 
@@ -22,10 +21,10 @@ def normalizing(X):
     x_normalized = (X - x_min) / x_range
     return x_normalized, x_min, x_range
 
-def euclidean_distance(A, B):
+def euclidean_distance(A, B, axis=None):
     """ A, B are array or matrix
     """
-    return np.sqrt( np.power(A - B, 2).sum(axis=1) )
+    return np.sqrt( np.power(A - B, 2).sum(axis=axis) )
 
 
 def load_data(fname, label=True, sep=None, func=lambda x: x):

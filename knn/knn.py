@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Yuande Liu <miracle (at) gmail.com>
+# Author: Yuande Liu <miraclecome (at) gmail.com>
 #
 # knn need to normalize the data, or else the feature data
 # with large scale will dominate the distance calculation,
@@ -8,8 +8,7 @@
 #
 # We can tuning the k, let classifier more accuracy.
 
-from __future__ import print_function
-from __future__ import division
+from __future__ import print_function, division
 from collections import Counter
 
 import os, sys
@@ -46,7 +45,7 @@ def knn_classifier(one_data, x_normalized=None, x_min=None, x_range=None, Y=None
         x_normalized, x_min, x_range, Y = process_data()
 
     one_normalized = (one_data - x_min) / x_range
-    distances = toolkit.euclidean_distance(x_normalized, one_normalized)
+    distances = toolkit.euclidean_distance(x_normalized, one_normalized, axis=1)
 
     distances = distances.T.A[0]
     distance_sort_indices = np.argsort(distances)

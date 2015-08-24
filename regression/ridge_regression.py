@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Yuande Liu <miracle (at) gmail.com>
+# Author: Yuande Liu <miraclecome (at) gmail.com>
 #
 # 特征数大于样本数，矩阵X不是满秩矩阵，逆不可求，岭回归解决。
 # 缩减技术，需要对特征做标准化处理。
