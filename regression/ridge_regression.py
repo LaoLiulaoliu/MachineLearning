@@ -71,7 +71,7 @@ def cross_validation(X, Y):
         print('alpha {}, test error is {}'.format(alphas[i], error))
 
 def cross_validation_10(X, Y, num=10):
-    """ 10折
+    """ 10折(10 folds)
         取最后一折的ridge_weights 来选缩减系数
     """
     m, n = np.shape(X)
