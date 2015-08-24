@@ -80,8 +80,8 @@ def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
         lowest_SSE = -1
         for i, _ in enumerate(centroids):
             subcluster = data[np.nonzero(cluster_assignment[:, 0].A == i)[0], :] # get all points in cluster i
-            if len(subcluster) == 0: # this cluster has no point, can be deleted
-                del(centroids[i])    # if deleted, centroids length may never reach k, so we compare last_SSE
+            if len(subcluster) == 0: # empty subcluster problem: this cluster has no point
+                del(centroids[i])    # if deleted this centroid, centroids length may never reach k, so we compare last_SSE
                 continue
             subcentroids, subcluster_assignment = kmeans(subcluster, 2, calculate_distance)
             subSSE = np.sum( subcluster_assignment[:, 1] )
