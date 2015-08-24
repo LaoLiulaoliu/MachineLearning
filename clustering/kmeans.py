@@ -18,6 +18,19 @@ def rand_k_centroids(data, k=3):
     return centroids
 
 def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand_k_centroids):
+    """ k means only converge to local minimum,
+        the result will easily affect by initial centroids
+
+        two problems:
+            1. one cluster can split. which one?
+                a. the cluster with biggest SSE(sum of squared error) until cluster growth to k;
+                b. after the cluster splitting, sum of all clusters' SSE is minimum
+            2. two cluster can merge. which two?
+                a. two nearest centroids;
+                b. after the two centroids merging, sum of all clusters' SSE is minimum
+
+        After analysing the two problems, we got bisecting k means.
+    """
     m, n = np.shape(data)
     # initial with -1, in case the compare changed conflict
     # 簇分配矩阵 [分配簇编号，和分配簇Sum of Squared Error]
@@ -45,7 +58,10 @@ def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand
     return centroids, cluster_assignment
 
 
-def bisect_kmeans(data, k):
+def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
+    """ We start with one cluster, split it to k.
+        Split the cluster which can decrease the SSE most.
+    """
     m, n = np.shape(data)
 
 
