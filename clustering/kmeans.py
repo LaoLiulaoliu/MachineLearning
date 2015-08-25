@@ -58,7 +58,9 @@ def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand
 
         for centre in range(k): # recalculate centroids
             points_in_cluster = data[ np.nonzero(cluster_assignment[:, 0].A == centre)[0] ] # get all points in this cluster
-            centroids[centre, :] = np.mean(points_in_cluster, axis=0) # assign centroid to mean of all points in this cluster
+            # assign centroid to mean of all points in this cluster
+            # if points_in_cluster is empty, this centroid is np.nan, warnings is printed
+            centroids[centre, :] = np.mean(points_in_cluster, axis=0)
     return centroids, cluster_assignment
 
 
@@ -75,15 +77,22 @@ def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
     for i in range(m): # calculate initial SSE
             cluster_assignment[i, 1] = calculate_distance(centroid, data[i, :]) ** 2
 
-    last_SSE = -1
     while(len(centroids) < k):
         lowest_SSE = -1
         for i, _ in enumerate(centroids):
             subcluster = data[np.nonzero(cluster_assignment[:, 0].A == i)[0], :] # get all points in cluster i
-            if len(subcluster) == 0: # empty subcluster problem: this cluster has no point
-                del(centroids[i])    # if deleted this centroid, centroids length may never reach k, so we compare last_SSE
+            if len(subcluster) == 0: # this cluster has no point
+                del(centroids[i])    # if deleted this centroid, centroids length may never reach k
                 continue
+
             subcentroids, subcluster_assignment = kmeans(subcluster, 2, calculate_distance)
+            if np.isnan( np.sum(subcentroids) ) == True:
+                # Do 2 means again if one cluster has no point
+                # Skip zero point centroid for splitting, centroids may not grow if its length is one
+                subcentroids, subcluster_assignment = kmeans(subcluster, 2, calculate_distance)
+                if np.isnan( np.sum(subcentroids) ) == True:
+                    continue
+
             subSSE = np.sum( subcluster_assignment[:, 1] )
             non_subSSE = np.sum( cluster_assignment[np.nonzero(cluster_assignment[:, 0].A != i)[0], 1] )
             if (subSSE + non_subSSE) < lowest_SSE or lowest_SSE == -1:
@@ -92,15 +101,14 @@ def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
                 best_subcentroids = subcentroids
                 best_subcluster_assignment = subcluster_assignment
 
-        print("all points' SSE: {}, last_SSE: {}".format(lowest_SSE, last_SSE))
-        if lowest_SSE == last_SSE: break
+        if lowest_SSE == -1: break # no suitable split in centroids
+        print("{} centroids SSE: {}".format(len(centroids)+1, lowest_SSE))
         best_subcluster_assignment[np.nonzero(best_subcluster_assignment[:, 0].A == 0)[0], 0] = best_split_centre
         best_subcluster_assignment[np.nonzero(best_subcluster_assignment[:, 0].A == 1)[0], 0] = len(centroids)
         cluster_assignment[np.nonzero(cluster_assignment[:, 0].A == best_split_centre)[0], :] = best_subcluster_assignment
 
-        centroids[best_split_centre] = subcentroids[0].tolist()[0] # replace a centroid with two better centroids
-        centroids.append(subcentroids[1].tolist()[0])
-        last_SSE = lowest_SSE
+        centroids[best_split_centre] = best_subcentroids[0].tolist()[0] # replace a centroid with two better centroids
+        centroids.append(best_subcentroids[1].tolist()[0])
     return np.mat(centroids), cluster_assignment
 
 
