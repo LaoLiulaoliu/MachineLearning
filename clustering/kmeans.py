@@ -81,9 +81,9 @@ def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
         lowest_SSE = -1
         for i, _ in enumerate(centroids):
             subcluster = data[np.nonzero(cluster_assignment[:, 0].A == i)[0], :] # get all points in cluster i
-            if len(subcluster) == 0: # this cluster has no point
-                del(centroids[i])    # if deleted this centroid, centroids length may never reach k
-                continue
+            # this cluster has no point, if deleted this centroid, centroids length may never reach k
+            # if len(subcluster) == 0:
+            #     del(centroids[i]); continue
 
             subcentroids, subcluster_assignment = kmeans(subcluster, 2, calculate_distance)
             if np.isnan( np.sum(subcentroids) ) == True:
@@ -103,8 +103,10 @@ def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
 
         if lowest_SSE == -1: break # no suitable split in centroids
         print("{} centroids SSE: {}".format(len(centroids)+1, lowest_SSE))
-        best_subcluster_assignment[np.nonzero(best_subcluster_assignment[:, 0].A == 0)[0], 0] = best_split_centre
+        # len(centroids) larger than any index in centroids, need to assign first
+        # if best_split_centre is 0, and assign first, best_subcluster_assignment all assigned to len(centroids)
         best_subcluster_assignment[np.nonzero(best_subcluster_assignment[:, 0].A == 1)[0], 0] = len(centroids)
+        best_subcluster_assignment[np.nonzero(best_subcluster_assignment[:, 0].A == 0)[0], 0] = best_split_centre
         cluster_assignment[np.nonzero(cluster_assignment[:, 0].A == best_split_centre)[0], :] = best_subcluster_assignment
 
         centroids[best_split_centre] = best_subcentroids[0].tolist()[0] # replace a centroid with two better centroids
@@ -121,5 +123,5 @@ if __name__ == '__main__':
                  [ 2.8692781,  -2.54779119]]
     print( np.sum(cents - centroids) )
 
-    print( bisecting_kmeans(data, 5)[0] )
+    print( bisecting_kmeans(data, 10)[0] )
 
