@@ -75,7 +75,7 @@ def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
 
     cluster_assignment = np.mat( np.zeros((m, 2)) )
     for i in range(m): # calculate initial SSE
-            cluster_assignment[i, 1] = calculate_distance(centroid, data[i, :]) ** 2
+        cluster_assignment[i, 1] = calculate_distance(centroid, data[i, :]) ** 2
 
     while(len(centroids) < k):
         lowest_SSE = -1
