@@ -4,7 +4,7 @@
 
 from __future__ import print_function
 
-import  numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
@@ -36,14 +36,23 @@ def normal_equation(X, Y):
     return theta
 
 def feature_normalize(X):
+    """
+    """
+    X_min = np.min(X, axis=0)
+    X_range = np.max(X, axis=0) - X_min
+    X_normalize = (X - X_min) / X_range
+    X_normalize[:, 0] = 1.0
+    return X_normalize, X_min, X_range
+
+def feature_standardize(X):
     """ `var` replace `std` also works
     """
     X_mean = np.mean(X, axis=0)
     X_std = np.std(X, axis=0)
     X_std[0, 0] = 1
-    X_normalize = (X - X_mean) / X_std
-    X_normalize[:, 0] = 1.0
-    return X_normalize, X_mean, X_std
+    X_standardize = (X - X_mean) / X_std
+    X_standardize[:, 0] = 1.0
+    return X_standardize, X_mean, X_std
 
 def feature_scaling(X):
     """ linear regression with feature scaling, will use mean, std in test data.

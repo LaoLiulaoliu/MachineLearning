@@ -47,7 +47,7 @@ def choose_best_feature(data):
         entropy = 0
         for val, times in counter.iteritems():
             branch_entropy = source_entropy( data[ (data[:, i].flatten().A[0] == val), -1 ] )
-            entropy += times / n * branch_entropy
+            entropy += times / m * branch_entropy
 
         if mini_entropy < 0 or entropy < mini_entropy:
             mini_entropy = entropy
