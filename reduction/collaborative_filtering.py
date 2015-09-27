@@ -42,10 +42,9 @@ def collaborative_filtering(X, user_row, distance=cosine_similarity, topN=5):
     """ item based collaborative filtering
         Assumption: row is user, column is product, score range in [0,5], 0 is not used
 
-        遍历某用户所有未打分的物品，计算每个物品可能打分。
-        对每个要计算打分的物品，遍历所有物品中用户打分过的物品，
-        要计算打分的物品和打分过的物品，计算两者均有其他用户打分部分的相似度，
-        用相似度乘以打分过的物品的打分之和，除以相似度之和(Why?)，得到估算的分数
+        遍历某用户所有未打分的物品，计算该物品和用户打分过的物品之间(有其他用户打分部分)的相似度，
+        用相似度乘以打分过物品的打分，乘积之和除以相似度之和(Why?)，得到估算的分数，
+        分数越高，认为用户越喜欢这部电影
     """
     m, n = np.shape(X)
     item_scores = []
