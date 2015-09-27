@@ -11,7 +11,7 @@ import numpy.linalg as LA
 def svd(X, ratio=0.9):
     U, Sigma, Vt = LA.svd(X) # m*m, ndarray, n*n
     idx = 0; proportion = 0
-    for i, sigma in enumerate(Sigma / sum(Sigma)):
+    for i, sigma in enumerate(np.power(Sigma, 2) / sum(np.power(Sigma, 2))):
         proportion += sigma
         if proportion > ratio:
             idx = i

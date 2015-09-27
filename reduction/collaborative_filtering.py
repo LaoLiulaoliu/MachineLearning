@@ -23,7 +23,7 @@ def pearson_correlation(A, B):
         return: 0 means A, B are very far, 1 means A == B
     """
     if len(A) < 3: return 1
-    return 0.5 + 0.5 * np.corrcoef(A, B, rowvar=0)
+    return 0.5 + 0.5 * np.corrcoef(A, B, rowvar=0)[0][1]
 
 def cosine_similarity(A, B):
     """ If positive and negative numbers are in A or B, cosine(A, b) range in [-1, 1],
