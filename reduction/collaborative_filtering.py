@@ -65,10 +65,10 @@ def collaborative_filtering(X, user_row, distance=cosine_similarity, topN=5):
     return item_scores[:topN]
 
 
-def cf(X, user_row, distance=cosine_similarity, topN=5):
-    """ svd without overlap
-        svd method do not need calculate overlap,
-        because svd already have dimensionality reduction
+def effective_cf(X, user_row, distance=cosine_similarity, topN=5):
+    """ svd method do not need calculate overlap, it use dimensionality reduction.
+
+        TODO: Similarity calculation is proceeding offline when data is large!!!
     """
     m, n = np.shape(X)
     unrated_cols = np.nonzero(X[user_row, :].A == 0)[1]
@@ -87,6 +87,13 @@ def cf(X, user_row, distance=cosine_similarity, topN=5):
         item_scores.append((unrated_col, estimate_score))
     item_scores.sort(key=operator.itemgetter(1), reverse=True)
     return item_scores[:topN]
+
+
+def cross_validation_cf():
+    """ change score to 0, calculate this score, evaulate with 'root mean squared error'
+        sqrt( ((original_score - estimate_score) ** 2 + ...) / N )
+    """
+    pass
 
 
 if __name__ == '__main__':
