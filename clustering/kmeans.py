@@ -82,8 +82,7 @@ def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
         for i, _ in enumerate(centroids):
             subcluster = data[np.nonzero(cluster_assignment[:, 0].A == i)[0], :] # get all points in cluster i
             # this cluster has no point, if deleted this centroid, centroids length may never reach k
-            # if len(subcluster) == 0:
-            #     del(centroids[i]); continue
+            # if len(subcluster) == 0: del(centroids[i]); continue
 
             subcentroids, subcluster_assignment = kmeans(subcluster, 2, calculate_distance)
             if np.any( np.isnan(subcentroids) ) == True:
@@ -102,10 +101,12 @@ def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
 
         if lowest_SSE == -1: break # no suitable split in centroids
         print("{} centroids SSE: {}".format(len(centroids)+1, lowest_SSE))
-        # len(centroids) larger than any index in centroids, need to assign first
-        # if best_split_centre is 0, and assign first, best_subcluster_assignment all assigned to len(centroids)
-        best_subcluster_assignment[np.nonzero(best_subcluster_assignment[:, 0].A == 1)[0], 0] = len(centroids)
-        best_subcluster_assignment[np.nonzero(best_subcluster_assignment[:, 0].A == 0)[0], 0] = best_split_centre
+        # len(centroids) larger than any index in centroids, need use to assign first
+        # if best_split_centre is 0, or len(centroids) is 1, they can affect best_subcluster_assignment without intermediate value
+        row1 = np.nonzero(best_subcluster_assignment[:, 0].A == 1)[0]
+        row0 = np.nonzero(best_subcluster_assignment[:, 0].A == 0)[0]
+        best_subcluster_assignment[row1, 0] = len(centroids)
+        best_subcluster_assignment[row0, 0] = best_split_centre
         cluster_assignment[np.nonzero(cluster_assignment[:, 0].A == best_split_centre)[0], :] = best_subcluster_assignment
 
         centroids[best_split_centre] = best_subcentroids[0].tolist()[0] # replace a centroid with two better centroids
