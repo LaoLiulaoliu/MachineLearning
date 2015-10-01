@@ -24,6 +24,7 @@ def rand_k_centroids(data, k=3):
 def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand_k_centroids):
     """ k means only converge to local minimum,
         the result will easily affect by initial centroids
+        Theoretically, the result of clustering will shake, but happens rarely.
 
         two problems:
             1. one cluster can split. which one?
