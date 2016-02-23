@@ -88,6 +88,7 @@ def bisecting_kmeans(data, k, calculate_distance=euclidean_distance):
             subcentroids, subcluster_assignment = kmeans(subcluster, 2, calculate_distance)
             if np.any( np.isnan(subcentroids) ) == True:
                 # Do 2means again if one cluster has no point, or else will generate zero point centroid
+                # that means this subcluster don't need to be split
                 subcentroids, subcluster_assignment = kmeans(subcluster, 2, calculate_distance)
                 if np.isnan( np.sum(subcentroids) ) == True:
                     continue
