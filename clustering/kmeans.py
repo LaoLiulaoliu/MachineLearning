@@ -15,10 +15,18 @@ import numpy as np
 def rand_k_centroids(data, k=3):
     m, n = np.shape(data)
     centroids = np.mat( np.zeros((k, n)) )
-    for j in range(n):
-        min_j   = np.min(data[:, j])
-        range_j = np.max(data[:, j]) - min_j
-        centroids[:, j] = min_j + range_j * np.random.rand(k, 1)
+
+    min_j = np.min(data, axis=0)
+    rang_j = np.max(data, axis=0) - min_j
+
+    centroids = np.tile(min_j, (k, 1)) + \
+        np.multiply(np.tile(rang_j, (k, 1)),
+                    np.random.rand(k, n))
+
+#    for j in range(n):
+#        min_j   = np.min(data[:, j])
+#        range_j = np.max(data[:, j]) - min_j
+#        centroids[:, j] = min_j + range_j * np.random.rand(k, 1)
     return centroids
 
 def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand_k_centroids):

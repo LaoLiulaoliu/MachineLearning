@@ -32,10 +32,10 @@ def process_data(fname='dating.data'):
 
     return process_data._loaded
 
-def knn_classifier(one_data, x_normalized=None, x_min=None, x_range=None, Y=None, k=5):
+def knn_classifier(one_data, k=5, x_normalized=None, x_min=None, x_range=None, Y=None):
     """ Euclidean distance of all features
 
-    Every classification will calculate the distance will every data sample,
+    Every classification will calculate the distance on every data sample,
     it costs a lot of CPU time and Memory.
 
     :param one_data: type 1 x n matrix, data need to be classified
@@ -76,7 +76,7 @@ class Test(object):
 
         error, counter = 0, 0
         for i in sample_indices[:test_m]:
-            y = knn_classifier(self.X[i], x_normalized, x_min, x_range, self.Y[sample_indices[test_m:],])
+            y = knn_classifier(self.X[i], 5, x_normalized, x_min, x_range, self.Y[sample_indices[test_m:],])
             if self.Y[i][0, 0] != y:
                 error += 1
             counter += 1
