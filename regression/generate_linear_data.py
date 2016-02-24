@@ -3,7 +3,7 @@
 # Author: Yuande Liu <miraclecome (at) gmail.com>
 
 from __future__ import print_function
-from numpy import *
+import numpy as np
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 import itertools
@@ -12,18 +12,18 @@ NUM = 10
 
 def function(x, y):
     """三维函数，但可以忽略y 只用两个维度 """
-    return 3 + 1.2 * x + 5 * y + 0.4 * cos(10 * x) + 0.6 * random.normal(0, 1, shape(x))
+    return 3 + 1.2 * x + 5 * y + 0.4 * np.cos(10 * x) + 0.6 * np.random.normal(0, 1, np.shape(x))
 
 def plot():
 
-    lin_x = arange(-NUM, NUM, 0.25)
-    lin_y = function(lin_x, zeros(lin_x.shape))
+    lin_x = np.arange(-NUM, NUM, 0.25)
+    lin_y = function(lin_x, np.zeros(lin_x.shape))
 
     X, Y = [], []
-    for i in itertools.combinations(arange(-NUM, NUM, 1), 2):
+    for i in itertools.combinations(np.arange(-NUM, NUM, 1), 2):
         X.append(i[0])
         Y.append(i[1])
-    X, Y = array(X, copy=False), array(Y, copy=False)
+    X, Y = np.array(X, copy=False), np.array(Y, copy=False)
     Z = function(X, Y)
 
     fig = plt.figure()
@@ -35,7 +35,7 @@ def plot():
 
     # 误差的分布, 因为是公式制造的误差，所以部分系统误差满足高斯分布，另一部分是余弦函数
     ax = fig.add_subplot(2, 2, 2)
-    ax.plot(lin_x, 0.4*cos(10*lin_x)+0.6*random.normal(0,1,lin_x.shape))
+    ax.plot(lin_x, 0.4*np.cos(10*lin_x)+0.6*np.random.normal(0,1,lin_x.shape))
 
     # 二维情况下，线性函数对带有噪声数据点的拟合示意
     ax = fig.add_subplot(2, 2, 3)
@@ -56,14 +56,14 @@ def plot():
 def generate_data():
     with open('linear_data_3d.txt', 'w') as fd:
         for i in range(200):
-            x = random.random_sample() * 2*NUM - NUM
-            y = random.random_sample() * 2*NUM - NUM
+            x = np.random.random_sample() * 2*NUM - NUM
+            y = np.random.random_sample() * 2*NUM - NUM
             z = function(x, y)
             fd.write('{}\t{}\t{}\n'.format(x, y, z))
 
     with open('linear_data_2d.txt', 'w') as fd:
         for i in range(200):
-            x = random.random_sample() * 2*NUM - NUM
+            x = np.random.random_sample() * 2*NUM - NUM
             y = 0
             z = function(x, y)
             fd.write('{}\t{}\n'.format(x, z))
