@@ -32,8 +32,9 @@ def preprocessing(train_data, test_data):
 
 def get_net():
     net = nn.Sequential()
-    net.add(nn.Dense(1))
-    net.initialize()
+    net.add(nn.Dense(10, activation='relu'),
+            nn.Dense(1))
+    net.initialize(init.Normal(sigma=1))
     return net
 
 def log_rmse(net, features, labels):
@@ -100,14 +101,14 @@ def main():
     test_features = nd.array(all_features[n_train:].values)
     train_labels = nd.array(train_data.SalePrice.values).reshape((-1, 1))
 
-    k, num_epochs, lr, weight_decay, batch_size = 5, 50, 5, 0, 32
+    k, num_epochs, lr, weight_decay, batch_size = 5, 100, 3, 7, 32
     train_l, valid_l = k_fold(k, train_features, train_labels,
             num_epochs, lr, weight_decay, batch_size)
 
     print('%d-fold validation: avg train rmse %f, avg valid rmse %f' % (k, train_l, valid_l))
 
-    train_and_pred(train_features, test_features, train_labels, test_data,
-               num_epochs, lr, weight_decay, batch_size)
+#    train_and_pred(train_features, test_features, train_labels, test_data,
+#               num_epochs, lr, weight_decay, batch_size)
 
 
 def train_and_pred(train_features, test_features, train_labels, test_data,
