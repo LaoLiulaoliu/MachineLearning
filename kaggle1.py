@@ -25,10 +25,17 @@ def preprocessing(train_data, test_data):
     all_features[numeric_features] = all_features[numeric_features].apply(
         lambda x: (x - x.mean()) / (x.std()))
 
+    missing_series = massive_missing(all_features, 0.8)
+    all_features = all_features.drop(missing_series.index, axis=1)
+
     all_features = all_features.fillna(0)
     all_features = pd.get_dummies(all_features)
     return all_features
 
+
+def massive_missing(df, threshod):
+    nan_sum = df.isnull().sum()
+    return nan_sum[nan_sum > df.shape[0] * threshod]
 
 def get_net():
     net = nn.Sequential()
@@ -101,7 +108,7 @@ def main():
     test_features = nd.array(all_features[n_train:].values)
     train_labels = nd.array(train_data.SalePrice.values).reshape((-1, 1))
 
-    k, num_epochs, lr, weight_decay, batch_size = 5, 100, 3, 7, 32
+    k, num_epochs, lr, weight_decay, batch_size = 5, 100, 3, 17, 32
     train_l, valid_l = k_fold(k, train_features, train_labels,
             num_epochs, lr, weight_decay, batch_size)
 
