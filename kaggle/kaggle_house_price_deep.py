@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Author: Yuande Liu <miraclecome (at) gmail.com>
+# https://www.kaggle.com/c/house-prices-advanced-regression-techniques
 
 import sys; sys.path.append('..')
 import math
