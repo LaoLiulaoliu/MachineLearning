@@ -5,7 +5,8 @@
 import sys; sys.path.append('..')
 import math
 
-import d2lzh as d2l
+import seaborn as sns
+import matplotlib.pyplot as plt
 from mxnet import autograd, gluon, init, nd
 from mxnet.gluon import data as gdata, loss as gloss, nn
 import numpy as np
@@ -16,6 +17,17 @@ loss = gloss.L2Loss()
 def load_data():
     train_data = pd.read_csv('../data/kaggle_house_pred_train.csv')
     test_data = pd.read_csv('../data/kaggle_house_pred_test.csv')
+
+    train_data = train_data.sample(frac=1).reset_index(drop=True) # shuffle train data
+
+# plot histogram of SalePrice
+#    fig, ax = plt.subplots(nrows=1,ncols=2,figsize=(18,16))
+#    sns.distplot(train_data['SalePrice'], bins=50, ax=ax[0])
+
+#    train_data['SalePrice'] = train_data['SalePrice'].apply(np.log1p)
+
+#    sns.distplot(train_data['SalePrice'], bins=50, ax=ax[1])
+#    plt.show()
     return train_data, test_data
 
 def preprocessing(train_data, test_data):
@@ -25,23 +37,31 @@ def preprocessing(train_data, test_data):
     all_features[numeric_features] = all_features[numeric_features].apply(
         lambda x: (x - x.mean()) / (x.std()))
 
-    missing_series = massive_missing(all_features, 0.8)
+    missing_series = massive_missing(all_features, 0.6)
     all_features = all_features.drop(missing_series.index, axis=1)
 
-    all_features = all_features.fillna(0)
+    # fill NaN with mean in numeric features
+    all_features[numeric_features] = all_features[numeric_features].fillna(all_features[numeric_features].mean())
+    # fill NaN with 0 in object features
+    all_features.fillna(0, inplace=True)
+    # one hot representation
     all_features = pd.get_dummies(all_features)
     return all_features
 
 
-def massive_missing(df, threshod):
+def massive_missing(df, threshold):
+    """ if feature contains NaN proportions that exceed the threshold,
+        get columns and drop later
+    """
     nan_sum = df.isnull().sum()
-    return nan_sum[nan_sum > df.shape[0] * threshod]
+    return nan_sum[nan_sum > df.shape[0] * threshold]
 
 def get_net():
     net = nn.Sequential()
-    net.add(nn.Dense(10, activation='relu'),
+    net.add(nn.Dense(1024, activation='relu'),
+            nn.Dropout(0.4),
             nn.Dense(1))
-    net.initialize(init.Normal(sigma=1))
+    net.initialize()
     return net
 
 def log_rmse(net, features, labels):
@@ -67,6 +87,13 @@ def train(net, train_features, train_labels, test_features, test_labels,
         train_ls.append(log_rmse(net, train_features, train_labels))
         if test_labels is not None:
             test_ls.append(log_rmse(net, test_features, test_labels))
+
+#    print(train_ls, test_ls)
+#    plt.plot(train_ls)
+#    plt.legend(['train'])
+#    plt.plot(test_ls)
+#    plt.legend(['train', 'test'])
+#    plt.show()
     return train_ls, test_ls
 
 def get_k_fold_data(k, i, X, y):
@@ -74,7 +101,7 @@ def get_k_fold_data(k, i, X, y):
     fold_size = math.ceil(X.shape[0] / k)
     X_train, y_train = None, None
     for j in range(k):
-        idx = slice(j * fold_size, (j + 1) * fold_size)
+        idx = slice(j * fold_size, min((j + 1) * fold_size, y.shape[0]))
         X_part, y_part = X[idx, :], y[idx]
         if j == i:
             X_valid, y_valid = X_part, y_part
@@ -108,14 +135,14 @@ def main():
     test_features = nd.array(all_features[n_train:].values)
     train_labels = nd.array(train_data.SalePrice.values).reshape((-1, 1))
 
-    k, num_epochs, lr, weight_decay, batch_size = 5, 100, 3, 17, 32
+    k, num_epochs, lr, weight_decay, batch_size = 3, 70, 0.05, 500, 32
     train_l, valid_l = k_fold(k, train_features, train_labels,
             num_epochs, lr, weight_decay, batch_size)
 
     print('%d-fold validation: avg train rmse %f, avg valid rmse %f' % (k, train_l, valid_l))
 
-#    train_and_pred(train_features, test_features, train_labels, test_data,
-#               num_epochs, lr, weight_decay, batch_size)
+    train_and_pred(train_features, test_features, train_labels, test_data,
+               num_epochs, lr, weight_decay, batch_size)
 
 
 def train_and_pred(train_features, test_features, train_labels, test_data,
