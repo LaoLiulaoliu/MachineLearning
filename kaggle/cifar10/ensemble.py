@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from train import *
+from resnet import ResNet164_v2
+from densenet import DenseNet
 
-ctx = mx.gpu(1)
+ctx = mx.gpu(0)
 
 net1 = ResNet164_v2(10)
-net1.load_params('./resnet.params', ctx=ctx)
+net1.load_parameters('./resnet.params', ctx=ctx)
 net1.hybridize()
 
 net2 = DenseNet(growthRate=12, depth=100, reduction=0.5, bottleneck=True, nClasses=10)
-net2.load_params('./densenet.params', ctx=ctx)
+net2.load_parameters('./densenet.params', ctx=ctx)
 net2.hybridize()
 
 

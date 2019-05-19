@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Author: Yuande Liu <miraclecome (at) gmail.com>
+# 决策树经过分叉后，会越来越确定，信息熵越来越小，
+# 信息增益 = 原信息量 - 按这个feature分叉后信息量. 设定一个信息增益的阈值，小于就终止生成子树。
+#
 
 from __future__ import print_function, division
 
