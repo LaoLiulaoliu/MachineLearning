@@ -15,6 +15,6 @@ weight_decay = 1e-4
 lr_decay = 0.1
 train(model, train_valid_data, None, num_epochs, learning_rate, weight_decay, ctx, lr_decay, [149, 224])
 
-model.save_params('./densenet.params')
+model.save_parameters('./densenet.params')
 
 predict(model)
