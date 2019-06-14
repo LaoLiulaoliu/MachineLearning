@@ -5,7 +5,6 @@
 import sys; sys.path.append('..')
 import math
 
-import d2lzh as d2l
 from mxnet import autograd, gluon, init, nd
 from mxnet.gluon import data as gdata, loss as gloss, nn
 import numpy as np
@@ -14,8 +13,8 @@ import pandas as pd
 loss = gloss.L2Loss()
 
 def load_data():
-    train_data = pd.read_csv('../data/kaggle_house_pred_train.csv')
-    test_data = pd.read_csv('../data/kaggle_house_pred_test.csv')
+    train_data = pd.read_csv('./data/train.csv')
+    test_data = pd.read_csv('./data/test.csv')
     return train_data, test_data
 
 def preprocessing(train_data, test_data):
@@ -25,7 +24,7 @@ def preprocessing(train_data, test_data):
     all_features[numeric_features] = all_features[numeric_features].apply(
         lambda x: (x - x.mean()) / (x.std()))
 
-    missing_series = massive_missing(all_features, 0.6)
+    missing_series = massive_missing(all_features, 0.7)
     all_features = all_features.drop(missing_series.index, axis=1)
 
     all_features = all_features.fillna(0)
