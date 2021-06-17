@@ -37,6 +37,6 @@ def load_data(fname, label=True, sep=None, func=lambda x: x):
                 data_mat.append( [func(i) for i in data[:-1]] )
                 label_mat.append(data[-1])
             else:
-                data_mat.append( map(func, data) )
+                data_mat.append( list(map(func, data)) )
     return np.mat(data_mat), np.mat(label_mat).T
 

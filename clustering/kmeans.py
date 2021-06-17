@@ -43,6 +43,10 @@ def kmeans(data, k, calculate_distance=euclidean_distance, create_centroids=rand
                 b. after the two centroids merging, sum of all clusters' SSE is minimum
 
         After analysing the two problems, we got bisecting k means.
+
+    :return centroids: k centroids coordinate
+    :return cluster_assignment: [i, j], i is the classification, j is the distance from its centroid.
+    :rtype: typle
     """
     m, n = np.shape(data)
     # initial with -1, in case the compare changed conflict
